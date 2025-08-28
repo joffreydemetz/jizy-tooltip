@@ -1,0 +1,90 @@
+.tooltip {
+	// display: block;
+	max-width: @tooltip-width;
+	position: absolute;
+	opacity: 0;
+	border-radius: 4px;
+	background-color: @tooltip-bg-color;
+	font-family: @tooltip-font-family;
+	font-size: @tooltip-font-size;
+	line-height: 1;
+	color: @tooltip-fg-color;
+	text-align: center;
+	transition: opacity .8s;
+	transform: translateZ(0); // GPU
+	box-shadow: 0 0 4px rgba(255, 255, 255, .7);
+	animation: tooltip-anim .7s;
+	z-index: 234567891;
+
+	&:empty {
+		display: none !important;
+		opacity: 0 !important;
+	}
+
+	.tip-header {
+		padding: 2px 4px;
+		border-bottom: 1px solid @tooltip-fg-color;
+	}
+
+	.tip-content {
+		padding: 8px 10px;
+	}
+
+	&.arrow {
+		&::after {
+			position: absolute;
+			display: block;
+			content: "";
+			border: 0 solid transparent;
+			box-shadow: 0 0 4px rgba(255, 255, 255, .7);
+		}
+
+		// position arrow in the center Y
+		&.left::after,
+		&.right::after {
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		// position arrow in the center X
+		&.top::after,
+		&.bottom::after {
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		// position arrow on the right
+		&.left::after {
+			right: -8px;
+			border-width: 6px 0 6px 8px;
+			border-left-color: @tooltip-bg-color;
+		}
+
+		// position arrow on the left
+		&.right::after {
+			left: -8px;
+			border-width: 6px 8px 6px 0;
+			border-right-color: @tooltip-bg-color;
+		}
+
+		// position arrow in the top
+		&.bottom::after {
+			top: -8px;
+			border-width: 0 6px 8px 6px;
+			border-top-color: @tooltip-bg-color;
+		}
+
+		// position arrow in the bottom
+		&.top::after {
+			bottom: -8px;
+			border-width: 8px 6px 0 6px;
+			border-bottom-color: @tooltip-bg-color;
+		}
+	}
+}
+
+// [data-tooltip] {
+// cursor: pointer;
+// color: #7cb342;
+// display: inline-block;
+// }

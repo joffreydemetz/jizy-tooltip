@@ -1,0 +1,20 @@
+{
+    "name": "jdz/jizy-tooltip",
+    "type": "library",
+    "description": "A lightweight JS tooltip module",
+    "keywords": [
+        "JDZ",
+        "JS",
+        "Tooltip"
+    ],
+    "homepage": "https://jdz.joffreydemetz.com/jizy-tooltip",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joffrey Demetz",
+            "email": "joffrey.demetz@gmail.com",
+            "homepage": "https://joffreydemetz.com",
+            "role": "Lead"
+        }
+    ]
+}
