@@ -26,6 +26,7 @@
     "url": "git+https://github.com/joffreydemetz/jizy-tooltip.git"
   },
   "devDependencies": {
-    "jizy-packer": "^2.1.44"
+    "jizy-packer": "^2.1.44",
+    "less": "^4.4.1"
   }
 }
