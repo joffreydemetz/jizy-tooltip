@@ -1,24 +1,10 @@
 {
   "name": "jizy-tooltip",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "browser": "dist/js/jizy-tooltip.min.js",
   "main": "lib/index.js",
   "type": "module",
   "jizy": "dist/",
-  "files": [
-    "dist/*",
-    "lib/*"
-  ],
-  "scripts": {
-    "jpack:export": "node ./cli/jpack.js --action build --name perso",
-    "jpack:export-debug": "node ./cli/jpack.js --action build --name perso --debug",
-    "jpack:dist": "node ./cli/jpack.js",
-    "jpack:dist-debug": "node ./cli/jpack.js --debug"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/joffreydemetz/jizy-tooltip.git"
-  },
   "keywords": [
     "JiZy",
     "JS",
@@ -27,7 +13,19 @@
   "author": "Joffrey Demetz <joffrey.demetz@gmail.com> (https://joffreydemetz.com/)",
   "license": "MIT",
   "description": "A lightweight JS tooltip module",
+  "homepage": "https://jizy.joffreydemetz.com/jizy-tooltip",
+  "files": [
+    "dist/*",
+    "lib/*"
+  ],
+  "scripts": {
+    "jpack:dist": "node ./cli/jpack.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joffreydemetz/jizy-tooltip.git"
+  },
   "devDependencies": {
-    "jizy-packer": "^2.1"
+    "jizy-packer": "^2.1.44"
   }
 }
