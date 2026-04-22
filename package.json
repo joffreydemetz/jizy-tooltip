@@ -13,7 +13,7 @@
   "author": "Joffrey Demetz <joffrey.demetz@gmail.com> (https://joffreydemetz.com/)",
   "license": "MIT",
   "description": "A lightweight JS tooltip module",
-  "homepage": "https://jizy.joffreydemetz.com/jizy-tooltip",
+  "homepage": "https://jizy.joffreydemetz.com/tooltip",
   "files": [
     "dist/*",
     "lib/*"
