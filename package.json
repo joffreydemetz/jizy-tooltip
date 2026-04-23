@@ -1,6 +1,6 @@
 {
   "name": "jizy-tooltip",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "browser": "dist/js/jizy-tooltip.min.js",
   "main": "lib/index.js",
   "type": "module",
