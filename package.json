@@ -18,7 +18,8 @@
     "lib/*"
   ],
   "scripts": {
-    "jpack:dist": "node ./cli/jpack.js"
+    "jpack:dist": "node ./cli/jpack.js",
+    "test": "node --test \"test/*.test.js\""
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "jizy-packer": "^2.1.44",
+    "jsdom": "^25.0.1",
     "less": "^4.4.1"
   }
 }
