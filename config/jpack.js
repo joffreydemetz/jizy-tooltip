@@ -1,35 +1,15 @@
-import path from 'path';
-import {
-    jPackConfig,
-    generateLessVariablesFromConfig,
-    deleteLessVariablesFile
-} from 'jizy-packer';
+import { jPackConfig } from 'jizy-packer';
 
 const jPackData = function () {
-    const lessBuildVariablesPath = path.join(jPackConfig.get('basePath'), 'lib/less/_variables.less');
-
     jPackConfig.sets({
         name: 'jTooltip',
-        alias: 'jizy-tooltip',
-        lessVariables: {
-            desktopBreakpoint: '768px'
-        }
+        alias: 'jizy-tooltip'
     });
 
     jPackConfig.set('onCheckConfig', () => { });
-
-    jPackConfig.set('onGenerateBuildJs', (code) => {
-        const lessVariables = jPackConfig.get('lessVariables') ?? {};
-        const lessOriginalVariablesPath = path.join(jPackConfig.get('basePath'), 'lib/less/variables.less');
-        generateLessVariablesFromConfig(lessOriginalVariablesPath, lessBuildVariablesPath, lessVariables);
-        return code;
-    });
-
+    jPackConfig.set('onGenerateBuildJs', (code) => code);
     jPackConfig.set('onGenerateWrappedJs', (wrapped) => wrapped);
-
-    jPackConfig.set('onPacked', () => {
-        deleteLessVariablesFile(lessBuildVariablesPath);
-    });
+    jPackConfig.set('onPacked', () => { });
 };
 
 export default jPackData;
