@@ -2,4 +2,4 @@ import Tooltip from '{{PREFIX}}lib/js/Tooltip.js';
 
 import '{{PREFIX}}lib/tooltip.less';
 
-export default Tooltip;
+export { Tooltip };

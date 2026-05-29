@@ -9,8 +9,8 @@
         throw new Error("jTooltip is already defined");
     }
 
-    // @CODE 
+    // @CODE
 
-    global.jTooltip = Tooltip;
+    global.jTooltip = jTooltip.Tooltip;
 
 })(typeof window !== "undefined" ? window : this);
