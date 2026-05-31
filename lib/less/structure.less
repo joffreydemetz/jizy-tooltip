@@ -59,16 +59,18 @@
 		border: 0 solid transparent;
 	}
 
-	// center the arrow on the relevant edge
+	// Arrow offset along the relevant edge is set by Tooltip.js (--jtip-arrow-x
+	// / --jtip-arrow-y) so the arrow points at the trigger even when the tip is
+	// shifted; falls back to centred if the script hasn't set it.
 	&.left::after,
 	&.right::after {
-		top: 50%;
+		top: var(--jtip-arrow-y, 50%);
 		transform: translateY(-50%);
 	}
 
 	&.top::after,
 	&.bottom::after {
-		left: 50%;
+		left: var(--jtip-arrow-x, 50%);
 		transform: translateX(-50%);
 	}
 
