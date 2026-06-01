@@ -5,21 +5,21 @@
   "main": "lib/index.js",
   "type": "module",
   "jizy": "dist/",
-  "keywords": [
-    "JiZy",
-    "Tooltip"
-  ],
   "author": "Joffrey Demetz <joffrey.demetz@gmail.com> (https://joffreydemetz.com/)",
   "license": "MIT",
   "description": "A lightweight JS tooltip module",
   "homepage": "https://jizy.joffreydemetz.com/tooltip",
+  "keywords": [
+    "JiZy",
+    "Tooltip"
+  ],
   "files": [
     "dist/*",
     "lib/*"
   ],
   "scripts": {
     "jpack:dist": "node ./cli/jpack.js",
-    "test": "node --test \"test/*.test.js\""
+    "test": "node --test \"tests/*.test.js\""
   },
   "repository": {
     "type": "git",
