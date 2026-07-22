@@ -6,14 +6,17 @@ import Tooltip from '../lib/js/Tooltip.js';
 import Tip from '../lib/js/Tip.js';
 
 function newTip(overrides = {}) {
-    const el = makeTrigger({
+    const attrs = {
         'data-tip-id': overrides.id || 't1',
         'data-tip-header': overrides.header || '',
         'data-tip': overrides.content || 'body',
         'data-tip-theme': overrides.theme || '',
         'data-tip-position': overrides.position || 'top',
-    });
-    return new Tip(el);
+    };
+    if (overrides.arrow === false) {
+        attrs['data-tip-arrow'] = 'false';
+    }
+    return new Tip(makeTrigger(attrs));
 }
 
 describe('Tooltip', () => {
@@ -187,6 +190,17 @@ describe('Tooltip', () => {
             assert.ok(tt.element.classList.contains('theme-dark'));
             assert.ok(tt.element.classList.contains('large'));
             assert.ok(tt.element.classList.contains('right'));
+        });
+
+        test('show() adds no-arrow only for a tip that opted out', () => {
+            const tt = new Tooltip().ready();
+
+            tt.show(newTip({ id: 'noarr', arrow: false }));
+            assert.ok(tt.element.classList.contains('no-arrow'));
+
+            // switching to an arrow-on tip must drop the class (cleanClasses strips /arrow/)
+            tt.show(newTip({ id: 'witharr' }));
+            assert.ok(!tt.element.classList.contains('no-arrow'));
         });
 
         test('show() is a no-op when the same tip is already shown', () => {

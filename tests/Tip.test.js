@@ -41,6 +41,24 @@ describe('Tip', () => {
         assert.equal(tip.theme, '');
     });
 
+    test('arrow defaults to true when data-tip-arrow is absent', () => {
+        const el = makeTrigger({ 'data-tip-id': 'x', 'data-tip': 'y' });
+        const tip = new Tip(el);
+        assert.equal(tip.arrow, true);
+    });
+
+    test('data-tip-arrow="false" / "none" disables the arrow', () => {
+        const off1 = new Tip(makeTrigger({ 'data-tip': 'y', 'data-tip-arrow': 'false' }));
+        const off2 = new Tip(makeTrigger({ 'data-tip': 'y', 'data-tip-arrow': 'none' }));
+        assert.equal(off1.arrow, false);
+        assert.equal(off2.arrow, false);
+    });
+
+    test('any other data-tip-arrow value keeps the arrow on', () => {
+        const on = new Tip(makeTrigger({ 'data-tip': 'y', 'data-tip-arrow': 'true' }));
+        assert.equal(on.arrow, true);
+    });
+
     test('setCoords() captures element rect plus scroll offsets', () => {
         const el = makeTrigger({ 'data-tip-id': 'x', 'data-tip': 'y' });
         const tip = new Tip(el);

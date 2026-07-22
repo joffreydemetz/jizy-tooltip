@@ -41,7 +41,27 @@ The tooltip is dismissed on click outside, touch outside, or `Escape`.
 | `data-tip-header` | — | Optional header |
 | `data-tip-position` | `top` | `top`, `bottom`, `left`, `right`, `center` |
 | `data-tip-theme` | — | Space-separated theme classes added to the tip |
+| `data-tip-arrow` | `true` | Set to `false` (or `none`) to drop the arrow on this trigger only |
 | `data-tip-id` | auto | Stable id assigned on first show |
+
+### Arrow & placement
+
+The tip is placed relative to the trigger and the arrow sits on the edge facing
+it, pointing back at the trigger:
+
+| `data-tip-position` | Tip sits… | Arrow edge |
+|---|---|---|
+| `top` (default) | above the trigger | bottom |
+| `bottom` | below the trigger | top |
+| `left` | left of the trigger | right |
+| `right` | right of the trigger | left |
+| `center` | centred over the trigger | none |
+
+Even when clamped to the viewport edge, the arrow tracks the trigger's centre
+(driven by `--jtip-arrow-x` / `--jtip-arrow-y`, set at runtime).
+
+To hide the arrow **everywhere**, set `--jizy-tooltip-arrow-size: 0` (see
+Styling). For a **single** tip, use `data-tip-arrow="false"`.
 
 ## Constructor
 
@@ -59,14 +79,27 @@ The tooltip is dismissed on click outside, touch outside, or `Escape`.
 
 ## Styling
 
-Import the bundled CSS from `dist/css/` or the LESS sources from `lib/less/`. The build emits a generated `_variables.less` from `lib/less/variables.less` merged with the `lessVariables` defined in `config/jpack.js` (e.g. `desktopBreakpoint`).
+Import the bundled CSS from `dist/css/` (or the LESS sources from `lib/less/`).
+Theming is done entirely through CSS custom properties — override them at
+`:root` (or any scoped ancestor) from a stylesheet loaded **after** the tooltip
+CSS. No LESS fork or recompile needed.
 
-Override variables before importing `tooltip.less`, or fork `variables.less` to retheme:
+| Variable | Default | Description |
+|---|---|---|
+| `--jizy-tooltip-font-family` | `inherit` | Tip font family |
+| `--jizy-tooltip-font-size` | `14px` | Tip font size |
+| `--jizy-tooltip-width` | `170px` | Max tip width |
+| `--jizy-tooltip-bg-color` | `#333` | Tip background (also the arrow colour) |
+| `--jizy-tooltip-fg-color` | `#fff` | Tip text colour |
+| `--jizy-tooltip-arrow-size` | `8px` | Arrow protrusion; set to `0` to remove the arrow |
 
-```less
-@tooltip-bg-color: #1a1a1a;
-@tooltip-fg-color: #fff;
-@tooltip-width: 200px;
+```css
+:root {
+    --jizy-tooltip-bg-color: #1a1a1a;
+    --jizy-tooltip-fg-color: #eee;
+    --jizy-tooltip-width: 200px;
+    --jizy-tooltip-arrow-size: 0; /* no arrow anywhere */
+}
 ```
 
 ## Build

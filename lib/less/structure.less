@@ -52,11 +52,19 @@
 	}
 
 	// Arrow — rendered for every placed tip, pointing back at the trigger.
+	// Geometry is driven by --jizy-tooltip-arrow-size (protrusion; the
+	// perpendicular half-width is .75× of it). Set the var to 0 to collapse the
+	// arrow entirely; use the .no-arrow class (data-tip-arrow="false") to drop
+	// it on a single tip.
 	&::after {
 		position: absolute;
 		display: block;
 		content: "";
 		border: 0 solid transparent;
+	}
+
+	&.no-arrow::after {
+		display: none;
 	}
 
 	// Arrow offset along the relevant edge is set by Tooltip.js (--jtip-arrow-x
@@ -76,29 +84,29 @@
 
 	// tip sits to the LEFT of the trigger → arrow on the tip's right edge
 	&.left::after {
-		right: -8px;
-		border-width: 6px 0 6px 8px;
+		right: calc(-1 * var(--jizy-tooltip-arrow-size));
+		border-width: calc(var(--jizy-tooltip-arrow-size) * .75) 0 calc(var(--jizy-tooltip-arrow-size) * .75) var(--jizy-tooltip-arrow-size);
 		border-left-color: var(--jizy-tooltip-bg-color);
 	}
 
 	// tip sits to the RIGHT of the trigger → arrow on the tip's left edge
 	&.right::after {
-		left: -8px;
-		border-width: 6px 8px 6px 0;
+		left: calc(-1 * var(--jizy-tooltip-arrow-size));
+		border-width: calc(var(--jizy-tooltip-arrow-size) * .75) var(--jizy-tooltip-arrow-size) calc(var(--jizy-tooltip-arrow-size) * .75) 0;
 		border-right-color: var(--jizy-tooltip-bg-color);
 	}
 
 	// tip sits ABOVE the trigger → arrow on the tip's bottom edge
 	&.top::after {
-		bottom: -8px;
-		border-width: 8px 6px 0 6px;
+		bottom: calc(-1 * var(--jizy-tooltip-arrow-size));
+		border-width: var(--jizy-tooltip-arrow-size) calc(var(--jizy-tooltip-arrow-size) * .75) 0 calc(var(--jizy-tooltip-arrow-size) * .75);
 		border-top-color: var(--jizy-tooltip-bg-color);
 	}
 
 	// tip sits BELOW the trigger → arrow on the tip's top edge
 	&.bottom::after {
-		top: -8px;
-		border-width: 0 6px 8px 6px;
+		top: calc(-1 * var(--jizy-tooltip-arrow-size));
+		border-width: 0 calc(var(--jizy-tooltip-arrow-size) * .75) var(--jizy-tooltip-arrow-size) calc(var(--jizy-tooltip-arrow-size) * .75);
 		border-bottom-color: var(--jizy-tooltip-bg-color);
 	}
 }
