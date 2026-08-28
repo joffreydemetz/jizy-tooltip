@@ -134,18 +134,56 @@ describe('Tooltip', () => {
     });
 
     describe('cleanClasses()', () => {
-        test('removes theme-*, arrow, top/right/bottom/left classes', () => {
+        test('removes the classes the tooltip applied for a tip', () => {
             const tt = new Tooltip().ready();
-            tt.element.classList.add('jtip', 'theme-dark', 'arrow', 'top', 'fade-in', 'keep-me');
+            tt.show(newTip({ id: 'c1', position: 'top', theme: 'theme-dark', arrow: false }));
+
+            assert.ok(tt.element.classList.contains('top'));
+            assert.ok(tt.element.classList.contains('theme-dark'));
+            assert.ok(tt.element.classList.contains('no-arrow'));
 
             tt.cleanClasses();
 
-            assert.ok(!tt.element.classList.contains('theme-dark'));
-            assert.ok(!tt.element.classList.contains('arrow'));
             assert.ok(!tt.element.classList.contains('top'));
+            assert.ok(!tt.element.classList.contains('theme-dark'));
+            assert.ok(!tt.element.classList.contains('no-arrow'));
+        });
+
+        test('keeps structural and foreign classes', () => {
+            const tt = new Tooltip().ready();
+            // `topbar` and `arrow-lg` trip the old substring regex; the singleton
+            // lives in <body>, so a site may legitimately hook classes on it.
+            tt.element.classList.add('fade-in', 'keep-me', 'topbar', 'arrow-lg', 'left-rail');
+            tt.show(newTip({ id: 'c2', position: 'left' }));
+
+            tt.cleanClasses();
+
             assert.ok(tt.element.classList.contains('jtip'));
             assert.ok(tt.element.classList.contains('fade-in'));
             assert.ok(tt.element.classList.contains('keep-me'));
+            assert.ok(tt.element.classList.contains('topbar'));
+            assert.ok(tt.element.classList.contains('arrow-lg'));
+            assert.ok(tt.element.classList.contains('left-rail'));
+        });
+
+        test('does not leak a center tip class into the next show()', () => {
+            const tt = new Tooltip().ready();
+
+            tt.show(newTip({ id: 'c3', position: 'center' }));
+            assert.ok(tt.element.classList.contains('center'));
+
+            tt.show(newTip({ id: 'c4', position: 'bottom' }));
+            assert.ok(!tt.element.classList.contains('center'));
+            assert.ok(tt.element.classList.contains('bottom'));
+        });
+
+        test('ignores empty theme tokens', () => {
+            const tt = new Tooltip().ready();
+            tt.show(newTip({ id: 'c5', theme: 'alpha  beta' }));
+
+            assert.ok(tt.element.classList.contains('alpha'));
+            assert.ok(tt.element.classList.contains('beta'));
+            assert.ok(!tt.applied.includes(''));
         });
     });
 
