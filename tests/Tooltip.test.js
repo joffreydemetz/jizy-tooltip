@@ -1,11 +1,11 @@
 import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import './setup.js';
-import { resetDom, makeTrigger } from './setup.js';
+import { resetDom, makeTrigger, setViewport, stubSize } from './setup.js';
 import Tooltip from '../lib/js/Tooltip.js';
 import Tip from '../lib/js/Tip.js';
 
-function newTip(overrides = {}) {
+function newTip(overrides = {}, rect = null) {
     const attrs = {
         'data-tip-id': overrides.id || 't1',
         'data-tip-header': overrides.header || '',
@@ -16,7 +16,35 @@ function newTip(overrides = {}) {
     if (overrides.arrow === false) {
         attrs['data-tip-arrow'] = 'false';
     }
-    return new Tip(makeTrigger(attrs));
+    return new Tip(makeTrigger(attrs, rect));
+}
+
+const PAD = 8;
+const VP_W = 1024;
+const VP_H = 768;
+const TIP_W = 170;
+const TIP_H = 40;
+
+// Shows a tip of a known size for a trigger at a known place, and reports
+// what came out of position().
+function place(rect, overrides = {}, viewport = {}) {
+    setViewport({ width: VP_W, height: VP_H, ...viewport });
+
+    const tt = new Tooltip().ready();
+    stubSize(tt.element, overrides.tipW || TIP_W, overrides.tipH || TIP_H);
+    tt.show(newTip(overrides, rect));
+
+    const side = ['top', 'bottom', 'left', 'right', 'center']
+        .find((s) => tt.element.classList.contains(s));
+
+    return {
+        tt,
+        side,
+        left: parseFloat(tt.element.style.left),
+        top: parseFloat(tt.element.style.top),
+        arrowX: parseFloat(tt.element.style.getPropertyValue('--jtip-arrow-x')),
+        arrowY: parseFloat(tt.element.style.getPropertyValue('--jtip-arrow-y')),
+    };
 }
 
 describe('Tooltip', () => {
@@ -130,6 +158,127 @@ describe('Tooltip', () => {
             inner.dispatchEvent(evt);
 
             assert.equal(tt.shown, 'abc');
+        });
+    });
+
+    describe('position()', () => {
+        test('keeps the requested side and centres the tip when there is room', () => {
+            const r = place({ top: 300, left: 400, width: 100, height: 30 });
+
+            assert.equal(r.side, 'top');
+            assert.equal(r.left, 400 + (100 - TIP_W) / 2);
+            assert.equal(r.top, 300 - TIP_H - 10);
+        });
+
+        test('flips top to bottom when the trigger hugs the top edge', () => {
+            const r = place({ top: 5, left: 400, width: 100, height: 30 }, { position: 'top' });
+
+            assert.equal(r.side, 'bottom');
+            assert.equal(r.top, 35 + 10);
+            assert.ok(r.top >= PAD);
+        });
+
+        test('flips bottom to top when the trigger hugs the bottom edge', () => {
+            const r = place({ top: VP_H - 40, left: 400, width: 100, height: 30 }, { position: 'bottom' });
+
+            assert.equal(r.side, 'top');
+            assert.ok(r.top + TIP_H <= VP_H - PAD);
+        });
+
+        test('flips left to right when the trigger hugs the left edge', () => {
+            const r = place({ top: 300, left: 5, width: 100, height: 30 }, { position: 'left' });
+
+            assert.equal(r.side, 'right');
+            assert.equal(r.left, 105 + 10);
+        });
+
+        test('flips right to left when the trigger hugs the right edge', () => {
+            const r = place({ top: 300, left: VP_W - 110, width: 100, height: 30 }, { position: 'right' });
+
+            assert.equal(r.side, 'left');
+            assert.ok(r.left >= PAD);
+            assert.ok(r.left + TIP_W <= VP_W - PAD);
+        });
+
+        test('shifts a top tip left instead of overflowing the right edge', () => {
+            const r = place({ top: 300, left: VP_W - 34, width: 30, height: 30 }, { position: 'top' });
+
+            assert.equal(r.side, 'top');
+            assert.equal(r.left, VP_W - PAD - TIP_W);
+            assert.ok(r.left + TIP_W <= VP_W - PAD);
+        });
+
+        test('shifts a top tip right instead of overflowing the left edge', () => {
+            const r = place({ top: 300, left: 2, width: 30, height: 30 }, { position: 'top' });
+
+            assert.equal(r.side, 'top');
+            assert.equal(r.left, PAD);
+        });
+
+        test('the arrow tracks the trigger centre on a shifted tip', () => {
+            const rect = { top: 300, left: VP_W - 60, width: 30, height: 30 };
+            const r = place(rect, { position: 'top' });
+
+            const triggerCx = rect.left + rect.width / 2;
+            assert.equal(r.left, VP_W - PAD - TIP_W);   // shifted off centre
+            assert.equal(r.arrowX, triggerCx - r.left);
+            assert.notEqual(r.arrowX, TIP_W / 2);
+        });
+
+        test('the arrow stays inside the tip box when the trigger is past its edge', () => {
+            const r = place({ top: 300, left: VP_W - 20, width: 16, height: 30 }, { position: 'top' });
+
+            assert.ok(r.arrowX <= TIP_W - 12);
+            assert.ok(r.arrowX >= 12);
+        });
+
+        test('clamps against the viewport, not the document, on a scrolled page', () => {
+            // Trigger sits at the top of the viewport but far down the document —
+            // the old code compared document-space coords to viewport-space bounds
+            // and left the tip off-screen here.
+            const r = place(
+                { top: 5, left: 40, width: 100, height: 30 },
+                { position: 'top' },
+                { scrollX: 500, scrollY: 800 }
+            );
+
+            assert.equal(r.side, 'bottom');
+            assert.ok(r.top >= 800 + PAD);
+            assert.ok(r.top + TIP_H <= 800 + VP_H - PAD);
+            assert.ok(r.left >= 500 + PAD);
+            assert.ok(r.left + TIP_W <= 500 + VP_W - PAD);
+        });
+
+        test('pins a tip wider than the viewport to the near edge', () => {
+            const r = place({ top: 300, left: 400, width: 100, height: 30 }, { tipW: 2000 });
+
+            assert.equal(r.left, PAD);
+            assert.ok(!Number.isNaN(r.left));
+            assert.ok(!Number.isNaN(r.arrowX));
+        });
+
+        test('center never flips but is still clamped into view', () => {
+            const r = place({ top: 5, left: 2, width: 30, height: 30 }, { position: 'center' });
+
+            assert.equal(r.side, 'center');
+            assert.equal(r.left, PAD);
+            assert.equal(r.top, PAD);
+        });
+
+        test('falls back to the roomier side when neither side fits', () => {
+            // 700px tall tip, trigger a little below centre: neither above nor
+            // below has room, so the taller gap (above) wins.
+            const r = place({ top: 420, left: 400, width: 100, height: 30 }, { position: 'bottom', tipH: 700 });
+
+            assert.equal(r.side, 'top');
+            assert.equal(r.top, PAD);
+        });
+
+        test('treats an unknown position as top', () => {
+            const r = place({ top: 300, left: 400, width: 100, height: 30 }, { position: 'sideways' });
+
+            assert.equal(r.side, 'top');
+            assert.ok(!r.tt.element.classList.contains('sideways'));
         });
     });
 
