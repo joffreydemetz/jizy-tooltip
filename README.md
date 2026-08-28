@@ -57,18 +57,34 @@ it, pointing back at the trigger:
 | `right` | right of the trigger | left |
 | `center` | centred over the trigger | none |
 
-Even when clamped to the viewport edge, the arrow tracks the trigger's centre
-(driven by `--jtip-arrow-x` / `--jtip-arrow-y`, set at runtime).
+### Staying on screen
+
+`data-tip-position` is a **preference**, not a guarantee — the tip is kept inside
+the viewport:
+
+- **Flip** — if the requested side has no room, the tip is placed on the opposite
+  side (`top` ↔ `bottom`, `left` ↔ `right`) and the arrow moves to the matching
+  edge. If neither side fits, the roomier one wins. `center` never flips.
+- **Shift** — the tip is then clamped along the other axis so it never crosses a
+  viewport edge, keeping at least `padding` px of margin.
+
+Even when flipped or shifted, the arrow tracks the trigger's centre (driven by
+`--jtip-arrow-x` / `--jtip-arrow-y`, set at runtime).
+
+Placement is resolved once, when the tip is shown. The tip is `position: absolute`
+in document space, so it scrolls with the page.
 
 To hide the arrow **everywhere**, set `--jizy-tooltip-arrow-size: 0` (see
 Styling). For a **single** tip, use `data-tip-arrow="false"`.
 
 ## Constructor
 
-`new Tooltip(id = 'jTip', distance = 10)`
+`new Tooltip(id = 'jTip', distance = 10, padding = 8)`
 
 - `id` — id of the singleton tip element appended to `<body>`.
 - `distance` — pixel gap between trigger and tip.
+- `padding` — minimum pixel gap kept between the tip and the viewport edge (see
+  [Staying on screen](#staying-on-screen)).
 
 ## API
 
