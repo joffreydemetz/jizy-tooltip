@@ -33,24 +33,48 @@ if (typeof globalThis.crypto.randomUUID !== 'function') {
 export function resetDom() {
     document.body.innerHTML = '';
     document.body.className = '';
+    setViewport();
 }
 
-export function makeTrigger(attrs = {}) {
+// jsdom does no layout: documentElement.clientWidth/clientHeight are always 0
+// and scrollX/scrollY are read-only accessors. Redefine them so the placement
+// math has a viewport to work against.
+export function setViewport({ width = 1024, height = 768, scrollX = 0, scrollY = 0 } = {}) {
+    Object.defineProperty(document.documentElement, 'clientWidth', { value: width, configurable: true });
+    Object.defineProperty(document.documentElement, 'clientHeight', { value: height, configurable: true });
+    Object.defineProperty(window, 'scrollX', { value: scrollX, configurable: true });
+    Object.defineProperty(window, 'scrollY', { value: scrollY, configurable: true });
+}
+
+// Same reason: offsetWidth/offsetHeight read 0 without layout, which collapses
+// every measurement in Tooltip.position().
+export function stubSize(el, width, height) {
+    Object.defineProperty(el, 'offsetWidth', { value: width, configurable: true });
+    Object.defineProperty(el, 'offsetHeight', { value: height, configurable: true });
+}
+
+// rect is viewport-space (top/left/width/height), like a real
+// getBoundingClientRect(); Tip.setCoords() adds the scroll offset on top.
+export function makeTrigger(attrs = {}, rect = null) {
     const el = document.createElement('button');
     for (const [key, value] of Object.entries(attrs)) {
         el.setAttribute(key, value);
     }
-    el.getBoundingClientRect = () => ({
-        top: 100,
-        left: 50,
-        right: 150,
-        bottom: 130,
-        width: 100,
-        height: 30,
-        x: 50,
-        y: 100,
+
+    const r = { top: 100, left: 50, width: 100, height: 30, ...(rect || {}) };
+    const box = {
+        top: r.top,
+        left: r.left,
+        right: r.left + r.width,
+        bottom: r.top + r.height,
+        width: r.width,
+        height: r.height,
+        x: r.left,
+        y: r.top,
         toJSON() { return this; },
-    });
+    };
+
+    el.getBoundingClientRect = () => box;
     document.body.appendChild(el);
     return el;
 }
