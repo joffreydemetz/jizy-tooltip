@@ -4,7 +4,12 @@
 //   .fade-in           — visible (opacity transition in)
 //   .fade-out          — transitioning out
 //   .top/.bottom/.left/.right — placement relative to the trigger (drives arrow)
-.jtip {
+//
+// Scoped to [role="tooltip"] (set by Tooltip.getElement()) so these container
+// rules can never hit other elements that carry a `jtip` class — e.g. markup
+// or older scripts that used `.jtip` as a *trigger* marker. Only the tooltip
+// element itself has the role.
+.jtip[role="tooltip"] {
 	position: absolute;
 	// The tip has no positioned ancestor, so its containing block is the initial
 	// containing block — viewport-sized, anchored at the document origin. On a
