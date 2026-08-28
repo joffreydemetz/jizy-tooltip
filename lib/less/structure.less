@@ -6,6 +6,13 @@
 //   .top/.bottom/.left/.right — placement relative to the trigger (drives arrow)
 .jtip {
 	position: absolute;
+	// The tip has no positioned ancestor, so its containing block is the initial
+	// containing block — viewport-sized, anchored at the document origin. On a
+	// horizontally scrolled page the tip is placed past that block's right edge,
+	// leaving no available width, and shrink-to-fit collapses the box to its
+	// longest word. max-content sizes it from the content instead, so the box is
+	// the same everywhere; max-width still caps it.
+	width: max-content;
 	max-width: var(--jizy-tooltip-width);
 	border-radius: 4px;
 	background-color: var(--jizy-tooltip-bg-color);
